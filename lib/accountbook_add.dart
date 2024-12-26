@@ -1,4 +1,5 @@
 import 'package:account_book2/Class/TransactionService.dart';
+import 'package:account_book2/Expense_add.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,28 @@ class _AccountbookAddState extends State<AccountbookAdd> {
   String title = "";
   String title1 = "";
   String title2 = "";
-  //
+
+  int selectedIndex = 0;
+
+  // 왼쪽 카테고리 목록
+  final List<String> categories = [
+    "식비",
+    "교통/차량",
+    "문화생활",
+    "마트/편의점",
+    "패션/미용",
+    "생활용품"
+  ];
+
+  // 오른쪽 세부 메뉴
+  final Map<String, List<String>> details = {
+    "식비": ["식료품", "간식", "외식", "음료"],
+    "교통/차량": ["대중교통", "택시", "주유", "차량 정비"],
+    "문화생활": ["영화", "공연", "전시회", "여행"],
+    "마트/편의점": ["마트", "편의점"],
+    "패션/미용": ["의류", "화장품", "미용"],
+    "생활용품": ["가구", "주방용품", "청소용품"]
+  };
 
   // 선택 버튼 찾기
   void _selectButton(int index) {
@@ -122,6 +144,54 @@ class _AccountbookAddState extends State<AccountbookAdd> {
       _dateTimeController.text =
           formatDateTimeWithDayAndMeridiem(selectDateTime);
     });
+  }
+
+  Widget _build() {
+    return Row(
+      children: [
+        // 왼쪽 리스트 (카테고리)
+        Expanded(
+          flex: 1,
+          child: ListView.builder(
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return ExpansionTile(
+                key:
+                    PageStorageKey<String>(categories[index]), // 상태 유지를 위해 키 지정
+                title: Text(
+                  categories[index],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: selectedIndex == index
+                        ? Colors.orange
+                        : Colors.black, // 선택된 카테고리 색상
+                  ),
+                ),
+                initiallyExpanded: selectedIndex == index, // 선택된 항목 확장
+                children: details[categories[index]]!
+                    .map(
+                      (subcategory) => ListTile(
+                        title: Text(subcategory),
+                        onTap: () {
+                          print("$subcategory 선택됨");
+                          // 여기에서 선택에 따라 추가 작업 수행
+                        },
+                      ),
+                    )
+                    .toList(),
+                onExpansionChanged: (expanded) {
+                  if (expanded) {
+                    setState(() {
+                      selectedIndex = index; // 확장된 카테고리를 선택된 인덱스로 설정
+                    });
+                  }
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -360,14 +430,32 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                                       onPressed: () {
                                         print("수수료 버튼 클릭!");
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                      ),
+                                      style: ButtonStyle(
+                                          textStyle: WidgetStateProperty.all(
+                                            TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          foregroundColor:
+                                              WidgetStateProperty.all(
+                                            Colors.black,
+                                          ),
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                                  Colors.white),
+                                          shape: WidgetStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                color: Colors.black,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          padding: WidgetStateProperty.all(
+                                            EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 6),
+                                          )),
                                       child: const Text(
                                         "수수료",
                                         style: TextStyle(fontSize: 12),
@@ -417,7 +505,15 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                                           ),
                                           const Spacer(),
                                           IconButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ExpenseAdd(),
+                                                ),
+                                              );
+                                            },
                                             icon: const Icon(
                                               CupertinoIcons.pencil,
                                               color: Colors.white,
@@ -438,81 +534,82 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 300,
-                                      child: GridView.count(
-                                        crossAxisCount: 4,
-                                        crossAxisSpacing: 10,
-                                        mainAxisSpacing: 10,
-                                        childAspectRatio: 2,
-                                        children: <Widget>[
-                                          _buildCategoryIcon(
-                                              "식비",
-                                              Icons.fastfood,
-                                              '식비 클릭',
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "교통/차량",
-                                              Icons.directions_car,
-                                              '교통/차량 클릭',
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "문화생활",
-                                              Icons.palette,
-                                              "문화생활",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "마트/편의점",
-                                              Icons.local_grocery_store,
-                                              "마트/편의점",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "패션/미용",
-                                              Icons.shopping_bag,
-                                              "패션/미용",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon("생활용품", Icons.home,
-                                              "생활용품", classController, context),
-                                          _buildCategoryIcon(
-                                              "주거/통신",
-                                              Icons.phone_android,
-                                              "주거/통신",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "건강",
-                                              Icons.health_and_safety,
-                                              "건강",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon("교육", Icons.school,
-                                              "교육", classController, context),
-                                          _buildCategoryIcon(
-                                              "경조사/회비",
-                                              Icons.business,
-                                              "경조사/회비",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "부모님",
-                                              Icons.people,
-                                              "부모님",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "기타",
-                                              Icons.more_horiz,
-                                              "기타",
-                                              classController,
-                                              context),
-                                        ],
-                                      ),
-                                    ),
+                                    Expanded(child: _build()),
+                                    // SizedBox(
+                                    //   height: 300,
+                                    //   child: GridView.count(
+                                    //     crossAxisCount: 4,
+                                    //     crossAxisSpacing: 10,
+                                    //     mainAxisSpacing: 10,
+                                    //     childAspectRatio: 2,
+                                    //     children: <Widget>[
+                                    //       _buildCategoryIcon(
+                                    //           "식비",
+                                    //           Icons.fastfood,
+                                    //           '식비 클릭',
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "교통/차량",
+                                    //           Icons.directions_car,
+                                    //           '교통/차량 클릭',
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "문화생활",
+                                    //           Icons.palette,
+                                    //           "문화생활",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "마트/편의점",
+                                    //           Icons.local_grocery_store,
+                                    //           "마트/편의점",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "패션/미용",
+                                    //           Icons.shopping_bag,
+                                    //           "패션/미용",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon("생활용품", Icons.home,
+                                    //           "생활용품", classController, context),
+                                    //       _buildCategoryIcon(
+                                    //           "주거/통신",
+                                    //           Icons.phone_android,
+                                    //           "주거/통신",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "건강",
+                                    //           Icons.health_and_safety,
+                                    //           "건강",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon("교육", Icons.school,
+                                    //           "교육", classController, context),
+                                    //       _buildCategoryIcon(
+                                    //           "경조사/회비",
+                                    //           Icons.business,
+                                    //           "경조사/회비",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "부모님",
+                                    //           Icons.people,
+                                    //           "부모님",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "기타",
+                                    //           Icons.more_horiz,
+                                    //           "기타",
+                                    //           classController,
+                                    //           context),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ],
                                 );
                               },
@@ -587,7 +684,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                                       ),
                                     ),
                                     SizedBox(
-                                      height: 300,
+                                      height: 250,
                                       child: GridView.count(
                                         crossAxisCount: 4,
                                         crossAxisSpacing: 10,
