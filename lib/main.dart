@@ -129,7 +129,7 @@ class _FirstPageState extends State<FirstPage>
     });
   }
 
-  /// 연도와 월 업데이트 (화살표 아이콘 클릭)
+  /// 연도 업데이트 (화살표 아이콘 클릭)
   void _updateYear(int yearChange) {
     setState(() {
       MainSelectYear = DateTime(MainSelectYear.year + yearChange);
@@ -788,7 +788,7 @@ class _FirstPageState extends State<FirstPage>
 
                 /// 다섯번째 탭
                 const Center(
-                  child: Text("메모"),
+                  child: Text("데이터가 없습니다."),
                 ),
               ],
             ),
@@ -837,13 +837,87 @@ class _FirstPageState extends State<FirstPage>
   }
 }
 
-class SecondPage extends StatelessWidget {
+class SecondPage extends StatefulWidget {
   const SecondPage({super.key});
 
   @override
+  State<SecondPage> createState() => _SecondPageState();
+}
+
+DateTime MainSelectDateTime = DateTime.now();
+
+List<String> DropDownList = ['주간', '월간', '연간', '기간'];
+
+String dropDownValue = "주간";
+
+class _SecondPageState extends State<SecondPage> {
+  void _updateYearMonth(int MonthValue) {
+    setState(() {
+      MainSelectDateTime = DateTime(
+          MainSelectDateTime.year, MainSelectDateTime.month + MonthValue);
+    });
+  }
+
+  Future<void> _selectYear(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: MainSelectDateTime,
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2100),
+      initialDatePickerMode: DatePickerMode.year,
+      helpText: "년도 선택",
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
+        appBar: AppBar(
+          leadingWidth: 185,
+          leading: Row(
+            children: [
+              IconButton(
+                onPressed: () => _updateYearMonth(-1),
+                icon: Icon(Icons.arrow_back_ios_new_outlined),
+              ),
+              GestureDetector(
+                onTap: () => _selectYear(context),
+                child: Text(
+                  '${MainSelectDateTime.year}년 ${MainSelectDateTime.month}월',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => _updateYearMonth(1),
+                icon: Icon(
+                  Icons.arrow_forward_ios_outlined,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Column(children: [
+              DropdownButton(
+                items: DropDownList.map((String item) {
+                  return DropdownMenuItem<String>(
+                    child: Text('$item'),
+                  );
+                }).toList(),
+                onChanged: (String? Value) {
+                  setState(() {
+                    dropDownValue = Value!;
+                    print(dropDownValue);
+                  });
+                },
+              )
+            ])
+          ],
+        ),
         body: Center(
           child: Text('테스트1'),
         ),

@@ -424,7 +424,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                             ),
                             Positioned(
                               right: 0, // TextField의 오른쪽 끝에 배치
-                              top: 8, // TextField 높이에 맞게 배치
+                              top: 0, // TextField 높이에 맞게 배치
                               child: _isSelected[2]
                                   ? ElevatedButton(
                                       onPressed: () {
