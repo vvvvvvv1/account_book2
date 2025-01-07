@@ -873,53 +873,109 @@ class _SecondPageState extends State<SecondPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leadingWidth: 185,
-          leading: Row(
-            children: [
-              IconButton(
-                onPressed: () => _updateYearMonth(-1),
-                icon: Icon(Icons.arrow_back_ios_new_outlined),
-              ),
-              GestureDetector(
-                onTap: () => _selectYear(context),
-                child: Text(
-                  '${MainSelectDateTime.year}년 ${MainSelectDateTime.month}월',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            leadingWidth: 185,
+            leading: Row(
+              children: [
+                IconButton(
+                  onPressed: () => _updateYearMonth(-1),
+                  icon: Icon(Icons.arrow_back_ios_new_outlined),
+                ),
+                GestureDetector(
+                  onTap: () => _selectYear(context),
+                  child: Text(
+                    '${MainSelectDateTime.year}년 ${MainSelectDateTime.month}월',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                onPressed: () => _updateYearMonth(1),
-                icon: Icon(
-                  Icons.arrow_forward_ios_outlined,
+                IconButton(
+                  onPressed: () => _updateYearMonth(1),
+                  icon: Icon(
+                    Icons.arrow_forward_ios_outlined,
+                  ),
                 ),
+              ],
+            ),
+            actions: [
+              Column(children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                ),
+                Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Colors.grey, width: 2), // 테두리 색상과 두께 설정
+                    borderRadius: BorderRadius.circular(8), // 테두리 둥글게 설정
+                  ),
+                  child: DropdownButton(
+                    value: dropDownValue,
+                    items: DropDownList.map<DropdownMenuItem<String>>(
+                        (String item) {
+                      return DropdownMenuItem<String>(
+                        value: item,
+                        child: Text('$item'),
+                      );
+                    }).toList(),
+                    onChanged: (String? Value) {
+                      setState(() {
+                        dropDownValue = Value!;
+                        print(dropDownValue);
+                      });
+                    },
+                  ),
+                )
+              ])
+            ],
+            bottom: TabBar(
+                // 스크롤 가능 여부
+                isScrollable: false,
+                // 탭 아래 표시되는 선 색상 설정
+                indicatorColor: Colors.red,
+                // 탭 아래 표시되는 선 두께 설정
+                indicatorWeight: 4,
+                // 탭 텍스트 색상
+                labelColor: Colors.black,
+                // 탭 아래 표시되는 선 크기 설정
+                indicatorSize: TabBarIndicatorSize.tab,
+                // 선택된 탭 스타일
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                // 선택되지 않은 탭 스타일
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                ),
+                tabs: [
+                  Tab(text: '수입'),
+                  Tab(text: '지출'),
+                ]),
+          ),
+          body: TabBarView(
+            children: [
+              Column(
+                children: [
+                  Text(
+                    '화면1',
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    '화면2',
+                  ),
+                ],
               ),
             ],
           ),
-          actions: [
-            Column(children: [
-              DropdownButton(
-                items: DropDownList.map((String item) {
-                  return DropdownMenuItem<String>(
-                    child: Text('$item'),
-                  );
-                }).toList(),
-                onChanged: (String? Value) {
-                  setState(() {
-                    dropDownValue = Value!;
-                    print(dropDownValue);
-                  });
-                },
-              )
-            ])
-          ],
-        ),
-        body: Center(
-          child: Text('테스트1'),
         ),
       ),
     );
