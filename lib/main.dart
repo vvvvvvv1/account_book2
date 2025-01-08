@@ -451,6 +451,9 @@ class _FirstPageState extends State<FirstPage>
                                                 TextSpan(
                                                   text:
                                                       '${trans.description}\n',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
                                                 TextSpan(
                                                   text:
@@ -496,13 +499,22 @@ class _FirstPageState extends State<FirstPage>
                           focusedDay: MainSelectDateTime,
                           firstDay: DateTime.utc(1900, 1, 1),
                           lastDay: DateTime.utc(2100, 1, 1),
+                          headerStyle: HeaderStyle(
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                          ),
                           calendarStyle: const CalendarStyle(
+                            weekendTextStyle: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
                             cellMargin: EdgeInsets.all(8),
                             defaultTextStyle: TextStyle(
-                              fontSize: 10,
+                              fontSize: 12,
                             ),
                             todayTextStyle: TextStyle(
-                              fontSize: 10,
+                              fontSize: 12,
                             ),
                             tableBorder: TableBorder(
                               horizontalInside: BorderSide(
@@ -530,7 +542,20 @@ class _FirstPageState extends State<FirstPage>
                           children: [
                             ExpansionTile(
                               showTrailingIcon: false,
-                              title: const Text('12월'),
+                              title: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text('12월'),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text('data'),
+                                    ],
+                                  )
+                                ],
+                              ),
                               children: [
                                 Container(
                                   color: Colors.grey,
