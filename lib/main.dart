@@ -1,4 +1,6 @@
+import 'package:account_book2/Api/api_service.dart';
 import 'package:account_book2/Class/TransactionService.dart';
+import 'package:account_book2/Model/api_model.dart';
 import 'package:account_book2/Widget/TotalMoney.dart';
 import 'package:account_book2/accountbook_add.dart';
 import 'package:flutter/cupertino.dart';
@@ -547,11 +549,41 @@ class _FirstPageState extends State<FirstPage>
                                   Row(
                                     children: [
                                       const Text('12월'),
+                                      SizedBox(
+                                        width: 180,
+                                      ),
+                                      Text(
+                                        '0원',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        '0원',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      Text('data'),
+                                      Text(
+                                        '12.1 ~ 12.31',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        '0원',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                     ],
                                   )
                                 ],
@@ -875,6 +907,8 @@ List<String> DropDownList = ['주간', '월간', '연간', '기간'];
 
 String dropDownValue = "주간";
 
+final Future<List<ApiModel>> apimodel = ApiService.getTodaysToons();
+
 class _SecondPageState extends State<SecondPage> {
   void _updateYearMonth(int MonthValue) {
     setState(() {
@@ -983,23 +1017,46 @@ class _SecondPageState extends State<SecondPage> {
                   Tab(text: '지출'),
                 ]),
           ),
-          body: TabBarView(
-            children: [
-              Column(
-                children: [
-                  Text(
-                    '화면1',
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    '화면2',
-                  ),
-                ],
-              ),
-            ],
+          body: FutureBuilder(
+            future: apimodel,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TabBarView(
+                  children: [
+                    Column(
+                      children: [
+                        Expanded(
+                          child: ListView.separated(
+                              itemBuilder: (context, index) {
+                                var a = snapshot.data![index];
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                  ),
+                                  child: Text(a.title),
+                                );
+                              },
+                              separatorBuilder: (context, index) => SizedBox(
+                                    width: 20,
+                                  ),
+                              itemCount: snapshot.data!.length),
+                        )
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          '화면2',
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              } else
+                return Center(
+                  child: Text('12'),
+                );
+            },
           ),
         ),
       ),
@@ -1027,8 +1084,25 @@ class FourthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 10,
+            ),
+            child: Text(
+              '설정',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
         body: Center(
           child: Text('테스트3'),
         ),
