@@ -7,6 +7,9 @@ class ApiService {
   static String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev";
   static final String today = "today";
 
+  //static String baseUrl = "http://localhost:3000";
+  //static final String user = "user";
+
   // 메서드 생성
   // 비동기적으로 처리되는 웹툰 데이터 목록을 포함하는 Future 객체를 반환
   static Future<List<ApiModel>> getTodaysToons() async {

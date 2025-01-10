@@ -1,8 +1,5 @@
 class ApiModel {
-  final String title, thumb, id;
+  final String title;
 
-  ApiModel.fromJson(Map<String, dynamic> json)
-      : title = json['title'],
-        thumb = json['thumb'],
-        id = json['id'];
+  ApiModel.fromJson(Map<String, dynamic> json) : title = json['title'];
 }
