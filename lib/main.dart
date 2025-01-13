@@ -907,7 +907,7 @@ List<String> DropDownList = ['주간', '월간', '연간', '기간'];
 
 String dropDownValue = "주간";
 
-final Future<List<ApiModel>> apimodel = ApiService.getTodaysToons();
+final Future<List<ApiModel>> apimodel = ApiService.getApiData();
 
 class _SecondPageState extends State<SecondPage> {
   void _updateYearMonth(int MonthValue) {
@@ -1033,7 +1033,7 @@ class _SecondPageState extends State<SecondPage> {
                                   decoration: BoxDecoration(
                                     color: Colors.blue,
                                   ),
-                                  child: Text(a.title),
+                                  child: Text(a.category),
                                 );
                               },
                               separatorBuilder: (context, index) => SizedBox(
@@ -1054,7 +1054,7 @@ class _SecondPageState extends State<SecondPage> {
                 );
               } else
                 return Center(
-                  child: Text('12'),
+                  child: Text('err: ${snapshot.error}'),
                 );
             },
           ),
