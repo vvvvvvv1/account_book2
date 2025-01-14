@@ -1,22 +1,43 @@
 import 'package:account_book2/Api/api_service.dart';
-import 'package:account_book2/Class/TransactionService.dart';
 import 'package:account_book2/Expense_add.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
-class AccountbookAdd extends StatefulWidget {
-  const AccountbookAdd({super.key});
+class DetailPage extends StatefulWidget {
+  final int id;
+  final String date;
+  final String dayOfWeek;
+  final String category;
+  final String description;
+  final String time;
+  final String bank;
+  final int income;
+  final int expense;
+  final String fulldate;
+
+  const DetailPage({
+    super.key,
+    required this.id,
+    required this.date,
+    required this.dayOfWeek,
+    required this.category,
+    required this.description,
+    required this.time,
+    required this.bank,
+    required this.income,
+    required this.expense,
+    required this.fulldate,
+  });
 
   @override
-  _AccountbookAddState createState() => _AccountbookAddState();
+  State<DetailPage> createState() => _DetailPageState();
 }
 
-class _AccountbookAddState extends State<AccountbookAdd> {
+class _DetailPageState extends State<DetailPage> {
   // 날짜 입력 칸
-  final TextEditingController _dateTimeController = TextEditingController();
+  TextEditingController _dateTimeController = TextEditingController();
   // 금액 입력 칸
   TextEditingController amountController = TextEditingController();
   // 분류 입력 칸
@@ -28,7 +49,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
   // 메모 입력 칸
   TextEditingController memoController = TextEditingController();
 
-  DateTime selectDateTime = DateTime.now(); // 사용자가 선택한 날짜와 시간을 저장
+  DateTime selectDateTime = DateTime.now(); // 사용자가 선택한 날짜와 시간을 저장d
 
   final List<bool> _isSelected = [false, false, false];
 
@@ -37,6 +58,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
   String title2 = "";
 
   int selectedIndex = 0;
+  int id = 0;
 
   // 왼쪽 카테고리 목록
   final List<String> categories = [
@@ -89,7 +111,14 @@ class _AccountbookAddState extends State<AccountbookAdd> {
     super.initState();
 
     // 초기 상태에 현재 날짜와 시간을 지정
-    _dateTimeController.text = formatDateTimeWithDayAndMeridiem(selectDateTime);
+    //_dateTimeController.text = formatDateTimeWithDayAndMeridiem(selectDateTime);
+
+    _dateTimeController = TextEditingController(text: widget.fulldate);
+    amountController = TextEditingController(text: widget.income.toString());
+    classController = TextEditingController(text: widget.category);
+    assetController = TextEditingController(text: widget.bank);
+    detailController = TextEditingController(text: widget.description);
+    id = widget.id;
 
     _selectButton(1);
   }
@@ -218,20 +247,6 @@ class _AccountbookAddState extends State<AccountbookAdd> {
               Navigator.of(context).pop();
             },
           ),
-          actions: const [
-            Icon(
-              Icons.star_outline,
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Icon(
-              Icons.mic_none_outlined,
-            ),
-            SizedBox(
-              width: 20,
-            ),
-          ],
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -541,82 +556,82 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                                         ],
                                       ),
                                     ),
-                                    //Expanded(child: _build()),
-                                    SizedBox(
-                                      height: 250,
-                                      child: GridView.count(
-                                        crossAxisCount: 4,
-                                        crossAxisSpacing: 10,
-                                        mainAxisSpacing: 10,
-                                        childAspectRatio: 2,
-                                        children: <Widget>[
-                                          _buildCategoryIcon(
-                                              "식비",
-                                              Icons.fastfood,
-                                              '식비 클릭',
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "교통/차량",
-                                              Icons.directions_car,
-                                              '교통/차량 클릭',
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "문화생활",
-                                              Icons.palette,
-                                              "문화생활",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "마트/편의점",
-                                              Icons.local_grocery_store,
-                                              "마트/편의점",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "패션/미용",
-                                              Icons.shopping_bag,
-                                              "패션/미용",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon("생활용품", Icons.home,
-                                              "생활용품", classController, context),
-                                          _buildCategoryIcon(
-                                              "주거/통신",
-                                              Icons.phone_android,
-                                              "주거/통신",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "건강",
-                                              Icons.health_and_safety,
-                                              "건강",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon("교육", Icons.school,
-                                              "교육", classController, context),
-                                          _buildCategoryIcon(
-                                              "경조사/회비",
-                                              Icons.business,
-                                              "경조사/회비",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "부모님",
-                                              Icons.people,
-                                              "부모님",
-                                              classController,
-                                              context),
-                                          _buildCategoryIcon(
-                                              "기타",
-                                              Icons.more_horiz,
-                                              "기타",
-                                              classController,
-                                              context),
-                                        ],
-                                      ),
-                                    ),
+                                    Expanded(child: _build()),
+                                    // SizedBox(
+                                    //   height: 300,
+                                    //   child: GridView.count(
+                                    //     crossAxisCount: 4,
+                                    //     crossAxisSpacing: 10,
+                                    //     mainAxisSpacing: 10,
+                                    //     childAspectRatio: 2,
+                                    //     children: <Widget>[
+                                    //       _buildCategoryIcon(
+                                    //           "식비",
+                                    //           Icons.fastfood,
+                                    //           '식비 클릭',
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "교통/차량",
+                                    //           Icons.directions_car,
+                                    //           '교통/차량 클릭',
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "문화생활",
+                                    //           Icons.palette,
+                                    //           "문화생활",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "마트/편의점",
+                                    //           Icons.local_grocery_store,
+                                    //           "마트/편의점",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "패션/미용",
+                                    //           Icons.shopping_bag,
+                                    //           "패션/미용",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon("생활용품", Icons.home,
+                                    //           "생활용품", classController, context),
+                                    //       _buildCategoryIcon(
+                                    //           "주거/통신",
+                                    //           Icons.phone_android,
+                                    //           "주거/통신",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "건강",
+                                    //           Icons.health_and_safety,
+                                    //           "건강",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon("교육", Icons.school,
+                                    //           "교육", classController, context),
+                                    //       _buildCategoryIcon(
+                                    //           "경조사/회비",
+                                    //           Icons.business,
+                                    //           "경조사/회비",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "부모님",
+                                    //           Icons.people,
+                                    //           "부모님",
+                                    //           classController,
+                                    //           context),
+                                    //       _buildCategoryIcon(
+                                    //           "기타",
+                                    //           Icons.more_horiz,
+                                    //           "기타",
+                                    //           classController,
+                                    //           context),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ],
                                 );
                               },
@@ -807,7 +822,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                   children: [
                     const SizedBox(width: 15),
                     SizedBox(
-                      width: 240,
+                      width: 210,
                       child: Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -818,17 +833,6 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                             String Detail = detailController.text;
                             String Memo = memoController.text;
 
-                            // ApiService.createData(
-                            //     date: _dateTimeController.text.substring(8, 10),
-                            //     dayOfWeek:
-                            //         '${_dateTimeController.text.substring(12, 13)}요일',
-                            //     category: Class,
-                            //     description: Detail,
-                            //     time:
-                            //         _dateTimeController.text.substring(15, 22),
-                            //     bank: Asset,
-                            //     income: 0,
-                            //     expense: 0);
                             try {
                               String date =
                                   _dateTimeController.text.substring(0, 10);
@@ -861,20 +865,6 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                             } catch (e) {
                               print("Exception caught: $e");
                             }
-                            // Transactionservice transactionservice =
-                            //     context.read<Transactionservice>();
-                            // transactionservice.CreateTransaction(
-                            //     _dateTimeController.text.substring(8, 10),
-                            //     "dayOfWeek",
-                            //     Class,
-                            //     Asset,
-                            //     "time",
-                            //     "bank",
-                            //     0,
-                            //     0);
-                            // String total =
-                            //     '${_dateTimeController.text} / ${amountController.text} / ${classController.text} / ${assetController.text} / ${detailController.text} / ${memoController.text}';
-                            //print(test);
                           },
                           style: ButtonStyle(
                             foregroundColor:
@@ -897,7 +887,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                             ),
                           ),
                           child: const Text(
-                            '저장하기',
+                            '삭제',
                           ),
                         ),
                       ),
@@ -905,7 +895,48 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          String Date = _dateTimeController.text;
+                          String Amount = amountController.text;
+                          String Class = classController.text;
+                          String Asset = assetController.text;
+                          String Detail = detailController.text;
+                          String Memo = memoController.text;
+
+                          try {
+                            String date =
+                                _dateTimeController.text.substring(0, 10);
+                            String dayOfWeek =
+                                '${_dateTimeController.text.substring(12, 13)}요일';
+                            String category = classController.text;
+                            String description = detailController.text;
+                            String time =
+                                _dateTimeController.text.substring(15, 22);
+                            String bank = assetController.text;
+
+                            ApiService.updateDate(
+                                    id: id,
+                                    date: _dateTimeController.text
+                                        .substring(8, 10),
+                                    dayOfWeek:
+                                        '${_dateTimeController.text.substring(12, 13)}요일',
+                                    category: Class,
+                                    description: Detail,
+                                    time: _dateTimeController.text
+                                        .substring(15, 22),
+                                    bank: Asset,
+                                    income: 0,
+                                    expense: 0,
+                                    fulldate: _dateTimeController.text)
+                                .then((response) {
+                              print("Data Update successfully");
+                            }).catchError((error) {
+                              print("Error occurred: $error");
+                            });
+                          } catch (e) {
+                            print("Exception caught: $e");
+                          }
+                        },
                         style: ButtonStyle(
                           foregroundColor:
                               WidgetStateProperty.all(Colors.black),
@@ -921,7 +952,7 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                           ),
                         ),
                         child: const Text(
-                          '계속',
+                          '수정',
                         ),
                       ),
                     ),

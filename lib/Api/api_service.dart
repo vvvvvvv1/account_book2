@@ -47,6 +47,7 @@ class ApiService {
     required String bank,
     required int income,
     required int expense,
+    required String fulldate,
   }) async {
     try {
       final response = await http.post(
@@ -61,6 +62,7 @@ class ApiService {
           'bank': bank,
           'income': income,
           'expense': expense,
+          'fulldate': fulldate,
         }),
       );
       if (response.statusCode != 200) {
@@ -71,5 +73,37 @@ class ApiService {
     }
   }
 
-  Future<void> delApiData() async {}
+  /* UPDATE */
+  static Future<void> updateDate({
+    required int id,
+    required String date,
+    required String dayOfWeek,
+    required String category,
+    required String description,
+    required String time,
+    required String bank,
+    required int income,
+    required int expense,
+    required String fulldate,
+  }) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/$user/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'id': id,
+        'date': date,
+        'dayOfWeek': dayOfWeek,
+        'category': category,
+        'description': description,
+        'time': time,
+        'bank': bank,
+        'income': income,
+        'expense': expense,
+        'fulldate': fulldate,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create data');
+    }
+  }
 }

@@ -3,6 +3,7 @@ class ApiModel {
 
   //ApiModel.fromJson(Map<String, dynamic> json) : title = json['title'];
 
+  final int id;
   final String date;
   final String dayOfWeek;
   final String category;
@@ -11,14 +12,17 @@ class ApiModel {
   final String bank;
   final int income;
   final int expense;
+  final String fulldate;
 
   ApiModel.fromJson(Map<String, dynamic> json)
-      : date = json['date'],
+      : id = json['id'],
+        date = json['date'],
         dayOfWeek = json['dayOfWeek'],
         category = json['category'],
         description = json['description'],
         time = json['time'],
         bank = json['bank'],
         income = json['income'],
-        expense = json['expense'];
+        expense = json['expense'],
+        fulldate = json['fulldate'];
 }
