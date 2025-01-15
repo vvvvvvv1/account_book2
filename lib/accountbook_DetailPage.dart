@@ -826,39 +826,9 @@ class _DetailPageState extends State<DetailPage> {
                       child: Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            String Date = _dateTimeController.text;
-                            String Amount = amountController.text;
-                            String Class = classController.text;
-                            String Asset = assetController.text;
-                            String Detail = detailController.text;
-                            String Memo = memoController.text;
-
                             try {
-                              String date =
-                                  _dateTimeController.text.substring(0, 10);
-                              String dayOfWeek =
-                                  '${_dateTimeController.text.substring(12, 13)}요일';
-                              String category = classController.text;
-                              String description = detailController.text;
-                              String time =
-                                  _dateTimeController.text.substring(15, 22);
-                              String bank = assetController.text;
-
-                              ApiService.createData(
-                                      date: _dateTimeController.text
-                                          .substring(8, 10),
-                                      dayOfWeek:
-                                          '${_dateTimeController.text.substring(12, 13)}요일',
-                                      category: Class,
-                                      description: Detail,
-                                      time: _dateTimeController.text
-                                          .substring(15, 22),
-                                      bank: Asset,
-                                      income: 0,
-                                      expense: 0,
-                                      fulldate: _dateTimeController.text)
-                                  .then((response) {
-                                print("Data created successfully");
+                              ApiService.deleteData(id).then((response) {
+                                print("Data delete successfully");
                               }).catchError((error) {
                                 print("Error occurred: $error");
                               });
@@ -870,16 +840,7 @@ class _DetailPageState extends State<DetailPage> {
                             foregroundColor:
                                 WidgetStateProperty.all(Colors.white),
                             backgroundColor:
-                                WidgetStateProperty.resolveWith<Color>(
-                                    (states) {
-                              if (_isSelected[0]) {
-                                return Colors.blue.shade300; // 선택된 상태 0
-                              } else if (_isSelected[1]) {
-                                return Colors.orange.shade900; // 선택된 상태 1
-                              } else {
-                                return Colors.black; // 선택된 상태 2
-                              }
-                            }),
+                                WidgetStateProperty.all(Colors.red),
                             shape: WidgetStateProperty.all(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),

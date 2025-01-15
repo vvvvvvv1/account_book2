@@ -106,4 +106,12 @@ class ApiService {
       throw Exception('Failed to create data');
     }
   }
+
+  /* DELETE */
+  static Future<void> deleteData(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/$user/$id'));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete data');
+    }
+  }
 }
