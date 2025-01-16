@@ -817,7 +817,7 @@ class _DetailPageState extends State<DetailPage> {
                   height: 30,
                 ),
 
-                // 저장
+                // 삭제
                 Row(
                   children: [
                     const SizedBox(width: 15),
@@ -826,15 +826,70 @@ class _DetailPageState extends State<DetailPage> {
                       child: Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            try {
-                              ApiService.deleteData(id).then((response) {
-                                print("Data delete successfully");
-                              }).catchError((error) {
-                                print("Error occurred: $error");
-                              });
-                            } catch (e) {
-                              print("Exception caught: $e");
-                            }
+                            // 메세지 박스 표출
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  // Dialog 타이틀
+                                  title: Text('확인'),
+                                  content: Text('정말로 데이터를 삭제하시겠습니까?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        '취소',
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        try {
+                                          ApiService.deleteData(id)
+                                              .then((response) {
+                                            print("Data delete successfully");
+                                            // 성공하면 물어보는 메세지 박스 닫음
+                                            Navigator.of(context).pop();
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text('삭제완료'),
+                                                  content: Text(
+                                                      '데이터가 성공적으로 삭제되었습니다.'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context)
+                                                            .pushReplacementNamed(
+                                                                '/main');
+                                                      },
+                                                      child: Text(
+                                                        '확인',
+                                                      ),
+                                                    )
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }).catchError((error) {
+                                            print("Error occurred: $error");
+                                          });
+                                        } catch (e) {
+                                          print("Exception caught: $e");
+                                        }
+                                      },
+                                      child: Text(
+                                        '확인',
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
                           },
                           style: ButtonStyle(
                             foregroundColor:
@@ -857,46 +912,98 @@ class _DetailPageState extends State<DetailPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          String Date = _dateTimeController.text;
-                          String Amount = amountController.text;
-                          String Class = classController.text;
-                          String Asset = assetController.text;
-                          String Detail = detailController.text;
-                          String Memo = memoController.text;
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('수정'),
+                                content: Text('해당 데이터를 수정하시겠습니까?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      '취소',
+                                    ),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        String Date = _dateTimeController.text;
+                                        String Amount = amountController.text;
+                                        String Class = classController.text;
+                                        String Asset = assetController.text;
+                                        String Detail = detailController.text;
+                                        String Memo = memoController.text;
 
-                          try {
-                            String date =
-                                _dateTimeController.text.substring(0, 10);
-                            String dayOfWeek =
-                                '${_dateTimeController.text.substring(12, 13)}요일';
-                            String category = classController.text;
-                            String description = detailController.text;
-                            String time =
-                                _dateTimeController.text.substring(15, 22);
-                            String bank = assetController.text;
+                                        try {
+                                          String date = _dateTimeController.text
+                                              .substring(0, 10);
+                                          String dayOfWeek =
+                                              '${_dateTimeController.text.substring(12, 13)}요일';
+                                          String category =
+                                              classController.text;
+                                          String description =
+                                              detailController.text;
+                                          String time = _dateTimeController.text
+                                              .substring(15, 22);
+                                          String bank = assetController.text;
 
-                            ApiService.updateDate(
-                                    id: id,
-                                    date: _dateTimeController.text
-                                        .substring(8, 10),
-                                    dayOfWeek:
-                                        '${_dateTimeController.text.substring(12, 13)}요일',
-                                    category: Class,
-                                    description: Detail,
-                                    time: _dateTimeController.text
-                                        .substring(15, 22),
-                                    bank: Asset,
-                                    income: 0,
-                                    expense: 0,
-                                    fulldate: _dateTimeController.text)
-                                .then((response) {
-                              print("Data Update successfully");
-                            }).catchError((error) {
-                              print("Error occurred: $error");
-                            });
-                          } catch (e) {
-                            print("Exception caught: $e");
-                          }
+                                          ApiService.updateDate(
+                                                  id: id,
+                                                  date: _dateTimeController.text
+                                                      .substring(8, 10),
+                                                  dayOfWeek:
+                                                      '${_dateTimeController.text.substring(12, 13)}요일',
+                                                  category: Class,
+                                                  description: Detail,
+                                                  time: _dateTimeController.text
+                                                      .substring(15, 22),
+                                                  bank: Asset,
+                                                  income: 0,
+                                                  expense: 0,
+                                                  fulldate:
+                                                      _dateTimeController.text)
+                                              .then((response) {
+                                            print("Data Update successfully");
+                                            Navigator.of(context).pop();
+                                            // 업데이트 성공 시 메세지 박스 띄우기
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text('수정완료'),
+                                                  content: Text(
+                                                      '데이터가 성공적으로 수정되었습니다.'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context)
+                                                            .pushReplacementNamed(
+                                                                '/main');
+                                                      },
+                                                      child: Text(
+                                                        '확인',
+                                                      ),
+                                                    )
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }).catchError((error) {
+                                            print("Error occurred: $error");
+                                          });
+                                        } catch (e) {
+                                          print("Exception caught: $e");
+                                        }
+                                      },
+                                      child: Text('확인'))
+                                ],
+                              );
+                            },
+                          );
                         },
                         style: ButtonStyle(
                           foregroundColor:

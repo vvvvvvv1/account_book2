@@ -9,36 +9,39 @@ class ApiService {
   //static String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev";
   //static final String today = "today";
 
-  static String baseUrl = "http://192.168.10.71:3000";
+  static String baseUrl = "http://192.168.10.14:3000";
   //static String baseUrl = "http://10.0.2.2:3000";
-  static final String user = "user";
+  static String user = "user";
+  static String select = "select";
+  static String create = "create";
+  static String update = "update";
+  static String delete = "delete";
 
   /* SELECT */
   // 메서드 생성
   // 비동기적으로 처리되는 웹툰 데이터 목록을 포함하는 Future 객체를 반환
   static Future<List<ApiModel>> getApiData() async {
     List<ApiModel> apiInstances = [];
-    final url = Uri.parse('$baseUrl/$user');
+    // 요청할 서버 URL 구성
+    final url = Uri.parse('$baseUrl/$user/$select');
     // async 함수 내에서만 await 사용 가능
-    // Future 타입은 미래에 완료됨
     // http.get(url) : API 서버에 요청을 보냄
     // await : 서버에서 요청하고 처리하고 응답주는걸 기다림
-    // 응답을 response 변수에 저장함
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       // jsonDecode : string 형식을 json 형태로 변환
       final List<dynamic> webtoons = jsonDecode(response.body);
-      for (var webtoon in webtoons) {
-        apiInstances.add(ApiModel.fromJson(webtoon));
-      }
-      return apiInstances;
+      return webtoons.map((e) => ApiModel.fromJson(e)).toList();
     }
     throw Error();
   }
 
   /* CREATE */
+  // 클래스 인스턴스를 생성하지 않고 사용
+  // 비동기 작업을 다룰 때 사용되는 타입 (예: HTTP 요청, 파일 입출력 등)
   static Future<void> createData({
+    // 필드 선언
     required String date,
     required String dayOfWeek,
     required String category,
@@ -50,9 +53,13 @@ class ApiService {
     required String fulldate,
   }) async {
     try {
+      // http.post : 새로운 데이터 생성
       final response = await http.post(
-        Uri.parse('$baseUrl/$user'),
+        // 요청할 서버 URL 구성
+        Uri.parse('$baseUrl/$user/$create'),
+        // 요청 헤더 : 서버에 보낼 데이터의 타입 JSON 형식임을 알 수 있게 설정
         headers: {'Content-Type': 'application/json'},
+        // 요청 본문 : 서버에 전송할 데이터 JSON 형식으로 변환
         body: jsonEncode({
           'date': date,
           'dayOfWeek': dayOfWeek,
@@ -74,6 +81,8 @@ class ApiService {
   }
 
   /* UPDATE */
+  // 클래스 인스턴스를 생성하지 않고 사용
+  // 비동기 작업을 다룰 때 사용되는 타입 (예: HTTP 요청, 파일 입출력 등)
   static Future<void> updateDate({
     required int id,
     required String date,
@@ -86,9 +95,13 @@ class ApiService {
     required int expense,
     required String fulldate,
   }) async {
+    // http.put : 기존 리소스 수정
     final response = await http.put(
-      Uri.parse('$baseUrl/$user/$id'),
+      // 요청할 서버 URL 구성
+      Uri.parse('$baseUrl/$user/$update/$id'),
+      // 요청 헤더 : 서버에 보낼 데이터의 타입 JSON 형식임을 알 수 있게 설정
       headers: {'Content-Type': 'application/json'},
+      // 요청 본문 : 서버에 전송할 데이터 JSON 형식으로 변환
       body: jsonEncode({
         'id': id,
         'date': date,
@@ -102,14 +115,22 @@ class ApiService {
         'fulldate': fulldate,
       }),
     );
+    // 서버로부터 받은 응답 상태 코드 확인
     if (response.statusCode != 200) {
       throw Exception('Failed to create data');
     }
   }
 
   /* DELETE */
+  // 클래스 인스턴스를 생성하지 않고 사용
+  // 비동기 작업을 다룰 때 사용되는 타입 (예: HTTP 요청, 파일 입출력 등)
   static Future<void> deleteData(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$user/$id'));
+    // http.delete : 데이터 삭제
+    final response = await http.delete(
+      // 요청할 서버 URL 구성
+      Uri.parse('$baseUrl/$user/$delete/$id'),
+    );
+    // 서버로부터 받은 응답 상태 코드 확인
     if (response.statusCode != 200) {
       throw Exception('Failed to delete data');
     }

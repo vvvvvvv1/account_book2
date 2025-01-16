@@ -811,70 +811,99 @@ class _AccountbookAddState extends State<AccountbookAdd> {
                       child: Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            String Date = _dateTimeController.text;
-                            String Amount = amountController.text;
-                            String Class = classController.text;
-                            String Asset = assetController.text;
-                            String Detail = detailController.text;
-                            String Memo = memoController.text;
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('추가'),
+                                  content: Text('해당 데이터를 추가하시겠습니까?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        '취소',
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        String Date = _dateTimeController.text;
+                                        String Amount = amountController.text;
+                                        String Class = classController.text;
+                                        String Asset = assetController.text;
+                                        String Detail = detailController.text;
+                                        String Memo = memoController.text;
 
-                            // ApiService.createData(
-                            //     date: _dateTimeController.text.substring(8, 10),
-                            //     dayOfWeek:
-                            //         '${_dateTimeController.text.substring(12, 13)}요일',
-                            //     category: Class,
-                            //     description: Detail,
-                            //     time:
-                            //         _dateTimeController.text.substring(15, 22),
-                            //     bank: Asset,
-                            //     income: 0,
-                            //     expense: 0);
-                            try {
-                              String date =
-                                  _dateTimeController.text.substring(0, 10);
-                              String dayOfWeek =
-                                  '${_dateTimeController.text.substring(12, 13)}요일';
-                              String category = classController.text;
-                              String description = detailController.text;
-                              String time =
-                                  _dateTimeController.text.substring(15, 22);
-                              String bank = assetController.text;
+                                        try {
+                                          String date = _dateTimeController.text
+                                              .substring(0, 10);
+                                          String dayOfWeek =
+                                              '${_dateTimeController.text.substring(12, 13)}요일';
+                                          String category =
+                                              classController.text;
+                                          String description =
+                                              detailController.text;
+                                          String time = _dateTimeController.text
+                                              .substring(15, 22);
+                                          String bank = assetController.text;
 
-                              ApiService.createData(
-                                      date: _dateTimeController.text
-                                          .substring(8, 10),
-                                      dayOfWeek:
-                                          '${_dateTimeController.text.substring(12, 13)}요일',
-                                      category: Class,
-                                      description: Detail,
-                                      time: _dateTimeController.text
-                                          .substring(15, 22),
-                                      bank: Asset,
-                                      income: 0,
-                                      expense: 0,
-                                      fulldate: _dateTimeController.text)
-                                  .then((response) {
-                                print("Data created successfully");
-                              }).catchError((error) {
-                                print("Error occurred: $error");
-                              });
-                            } catch (e) {
-                              print("Exception caught: $e");
-                            }
-                            // Transactionservice transactionservice =
-                            //     context.read<Transactionservice>();
-                            // transactionservice.CreateTransaction(
-                            //     _dateTimeController.text.substring(8, 10),
-                            //     "dayOfWeek",
-                            //     Class,
-                            //     Asset,
-                            //     "time",
-                            //     "bank",
-                            //     0,
-                            //     0);
-                            // String total =
-                            //     '${_dateTimeController.text} / ${amountController.text} / ${classController.text} / ${assetController.text} / ${detailController.text} / ${memoController.text}';
-                            //print(test);
+                                          ApiService.createData(
+                                                  date: _dateTimeController.text
+                                                      .substring(8, 10),
+                                                  dayOfWeek:
+                                                      '${_dateTimeController.text.substring(12, 13)}요일',
+                                                  category: Class,
+                                                  description: Detail,
+                                                  time: _dateTimeController.text
+                                                      .substring(15, 22),
+                                                  bank: Asset,
+                                                  income: 0,
+                                                  expense: 0,
+                                                  fulldate:
+                                                      _dateTimeController.text)
+                                              .then((response) {
+                                            print("Data created successfully");
+                                            Navigator.of(context).pop();
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text('추가완료'),
+                                                  content:
+                                                      Text('해당 데이터가 추가되었습니다.'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context)
+                                                            .pushReplacementNamed(
+                                                                '/main');
+                                                      },
+                                                      child: Text(
+                                                        '확인',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }).catchError((error) {
+                                            print("Error occurred: $error");
+                                          });
+                                        } catch (e) {
+                                          print("Exception caught: $e");
+                                        }
+                                      },
+                                      child: Text(
+                                        '확인',
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           style: ButtonStyle(
                             foregroundColor:

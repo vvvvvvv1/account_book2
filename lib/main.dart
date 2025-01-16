@@ -38,6 +38,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/main': (context) => MyApp(),
+      },
       home: Scaffold(
         body: IndexedStack(
           /// 보여주려는 페이지 index
