@@ -37,11 +37,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // 디버그 배너 없애기
       debugShowCheckedModeBanner: false,
       routes: {
+        // /main : 경로 이름 (이 경로를 통해 특정 화면 네비게이션)
+        // (context) => MyApp() : 이 경로가 호출되면 MyApp 위젯이 생성됨
+        // ex) Navigator.pushNamed(context, '/main); 이 호출되면 /main 경로에 해당하는 MyApp 위젯 표시
+        // 네비게이션 설정할 때 사용 (특정 경로를 위젯과 연결)
         '/main': (context) => MyApp(),
       },
       home: Scaffold(
+        // 제공된 인덱스에 따라 한 번에 하나의 자식만 표시하는 위젯
         body: IndexedStack(
           /// 보여주려는 페이지 index
           index: currentIndex,
@@ -54,10 +60,15 @@ class _MyAppState extends State<MyApp> {
             FourthPage(),
           ],
         ),
+        // 네비게이션 바 화면 하단 표시
         bottomNavigationBar: BottomNavigationBar(
+          // 현재 선택된 탭 인덱스
           currentIndex: currentIndex,
+          // 탭할 때 호출
+          // newIndex : 선택된 탭 인덱스
           onTap: (newIndex) {
             print('selected newIndex : $newIndex');
+            // 상태 업데이트
             setState(() {
               currentIndex = newIndex;
             });
@@ -142,23 +153,6 @@ class _FirstPageState extends State<FirstPage>
     });
   }
 
-  //#region _selectDate 메서드
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: MainSelectDateTime,
-  //     firstDate: DateTime(1900),
-  //     lastDate: DateTime(2100),
-  //   );
-
-  //   if (picked != null && picked != MainSelectDateTime) {
-  //     setState(() {
-  //       MainSelectDateTime = picked;
-  //     });
-  //   }
-  // }
-  //#endregion
-
   /// showDatePicker를 사용하여 년월 선택 및 선택 날짜 변수에 저장 (년월 선택)
   Future<void> _selectYearMonth(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -187,6 +181,7 @@ class _FirstPageState extends State<FirstPage>
       helpText: "년도 선택", // 다이얼로그 상단에 표시되는 텍스트
     );
     if (picked != null) {
+      // 특정 오브젝트의 상태(값)를 변경하기 위해 사용
       setState(() {
         MainSelectYear = DateTime(picked.year); // 선택한 년, 월 저장
       });
@@ -195,744 +190,746 @@ class _FirstPageState extends State<FirstPage>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Transactionservice>(
-        builder: (context, transactionservice, child) {
-      //List<Transaction> transaction = transactionservice.TransactionList;
-      final Future<List<ApiModel>> apimodel = ApiService.getApiData();
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        // localizationsDelegates: const [
-        //   GlobalMaterialLocalizations.delegate, // 한국어 등 로케일을 지원
-        //   GlobalWidgetsLocalizations.delegate,
-        // ],
-        home: DefaultTabController(
-          length: 5,
-          child: Scaffold(
-            /// AppBar
-            appBar: AppBar(
-              automaticallyImplyLeading: true,
-              backgroundColor: Colors.white,
-              leadingWidth: 185,
+    final Future<List<ApiModel>> apimodel = ApiService.getApiData();
+    return MaterialApp(
+      // 디버그 배너 없애기
+      debugShowCheckedModeBanner: false,
+      // TabBar 및 TabBarView 위젯을 구현할 수 있게 해주는 위젯
+      home: DefaultTabController(
+        // 탭의 수 정의
+        length: 5,
+        child: Scaffold(
+          /// AppBar
+          appBar: AppBar(
+            // 왼쪽 버튼 없앨 때 사용 (<-, 햄버거 버튼)
+            automaticallyImplyLeading: true,
+            // AppBar 배경색
+            backgroundColor: Colors.white,
+            // AppBar leading 위젯 너비 설정
+            leadingWidth: 185,
 
-              /// tab index가 2이면 년도만 표출 / 아니면 년월 표출
-              leading: _tabController.index == 2
-                  ? Row(
-                      children: [
-                        /// <-
-                        IconButton(
-                          onPressed: () => _updateYear(-1),
-                          icon: const Icon(Icons.arrow_back),
+            /// tab index가 2이면 년도만 표출 / 아니면 년월 표출
+            leading: _tabController.index == 2
+                ? Row(
+                    children: [
+                      /// <-
+                      IconButton(
+                        // 년도 값 (-)
+                        onPressed: () => _updateYear(-1),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+
+                      /// ex) 2025년
+                      /// 사용자 동작 감지 위젯
+                      GestureDetector(
+                        onTap: () =>
+                            _selectYear(context), // 텍스트 클릭 시 DatePicker 열기
+                        child: Text(
+                          "${MainSelectYear.year}년",
+                          style: const TextStyle(fontSize: 15),
                         ),
-                        GestureDetector(
-                          onTap: () =>
-                              _selectYear(context), // 텍스트 클릭 시 DatePicker 열기
+                      ),
+
+                      /// ->
+                      IconButton(
+                        // 년도 값 (+)
+                        onPressed: () => _updateYear(1),
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      /// <-
+                      IconButton(
+                        iconSize: 18,
+                        // 년월 값 (-)
+                        onPressed: () => _updateYearMonth(-1),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Expanded(
+                        /// ex) 2025년
+                        /// 사용자 동작 감지 위젯
+                        child: GestureDetector(
+                          onTap: () => _selectYearMonth(
+                              context), // 텍스트 클릭 시 DatePicker 열기
                           child: Text(
-                            "${MainSelectYear.year}년",
+                            "${MainSelectDateTime.year}년 ${MainSelectDateTime.month}월",
                             style: const TextStyle(fontSize: 15),
-                          ),
-                        ),
-
-                        /// ->
-                        IconButton(
-                          onPressed: () => _updateYear(1),
-                          icon: const Icon(Icons.arrow_forward),
-                        ),
-                      ],
-                    )
-                  : Row(
-                      children: [
-                        /// <-
-                        IconButton(
-                          iconSize: 18,
-                          onPressed: () => _updateYearMonth(-1),
-                          icon: const Icon(Icons.arrow_back),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectYearMonth(
-                                context), // 텍스트 클릭 시 DatePicker 열기
-                            child: Text(
-                              "${MainSelectDateTime.year}년 ${MainSelectDateTime.month}월",
-                              style: const TextStyle(fontSize: 15),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-
-                        /// ->
-                        IconButton(
-                          iconSize: 18,
-                          onPressed: () => _updateYearMonth(1),
-                          icon: const Icon(Icons.arrow_forward),
-                        ),
-                      ],
-                    ),
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.email_outlined),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.star_border),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.list),
-                ),
-              ],
-
-              /// TabBar
-              bottom: TabBar(
-                  // 컨트롤러 설정
-                  controller: _tabController,
-                  // 스크롤 가능 여부
-                  isScrollable: false,
-                  // 탭 아래 표시되는 선 색상 설정
-                  indicatorColor: Colors.red,
-                  // 탭 아래 표시되는 선 두께 설정
-                  indicatorWeight: 4,
-                  // 탭 텍스트 색상
-                  labelColor: Colors.black,
-                  // 탭 아래 표시되는 선 크기 설정
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  // 선택된 탭 스타일
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  // 선택되지 않은 탭 스타일
-                  unselectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                  ),
-                  // 탭 바에 표시될 탭 콘텐츠 정의
-                  tabs: const [
-                    Tab(
-                      text: "일일",
-                    ),
-                    Tab(
-                      text: "달력",
-                    ),
-                    Tab(
-                      text: "월별",
-                    ),
-                    Tab(
-                      text: "결산",
-                    ),
-                    Tab(
-                      text: "메모",
-                    ),
-                  ]),
-            ),
-            body: TabBarView(
-              controller: _tabController,
-              children: [
-                /// 첫번째 탭
-                Column(
-                  children: [
-                    // 수입, 지출, 합계
-                    const TotalMoney(),
-                    Expanded(
-                        // List에 데이터 없으면 데이터 없음 텍스트 표출 / 있으면 데이터 표출
-                        child: FutureBuilder(
-                      future: apimodel,
-                      builder: (context, snapshot) {
-                        // 데이터 로딩중
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (snapshot.data!.isEmpty) {
-                          return const Center(child: Text('데이터 없음'));
-                        } else {
-                          final apimodel = snapshot.data!;
-                          return ListView.builder(
-                            // 보여주려는 데이터 개수
-                            itemCount: apimodel.length,
-                            // itemCount 만큼 반복되며 화면에 보여주려는 위젯
-                            // index가 0부터 transactions.length - 1까지 증가하며 전달됩니다.
-                            itemBuilder: (context, index) {
-                              // transactions index에 해당하는 data 꺼내기
-                              final trans = apimodel[index];
-                              return Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  //borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          trans.date,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange,
-                                            borderRadius:
-                                                BorderRadius.circular(3),
-                                          ),
-                                          child: Text(
-                                            trans.dayOfWeek,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          '${MainSelectDateTime.year}. ${MainSelectDateTime.month}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 150,
-                                        ),
-                                        Text(
-                                          '${trans.income}원',
-                                          style: const TextStyle(
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          '${trans.expense}원',
-                                          style: const TextStyle(
-                                            color: Colors.red,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            height: 1,
-                                            color: Colors.grey.shade300,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 5),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => DetailPage(
-                                              id: trans.id,
-                                              date: trans.date,
-                                              dayOfWeek: trans.dayOfWeek,
-                                              category: trans.category,
-                                              description: trans.description,
-                                              time: trans.time,
-                                              bank: trans.bank,
-                                              income: trans.income,
-                                              expense: trans.expense,
-                                              fulldate: trans.fulldate,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        child: Row(
-                                          children: [
-                                            const Icon(
-                                              CupertinoIcons.car,
-                                            ),
-                                            Text(
-                                              trans.category,
-                                            ),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                            Expanded(
-                                              child: RichText(
-                                                text: TextSpan(
-                                                  children: [
-                                                    TextSpan(
-                                                      text:
-                                                          '${trans.description}\n',
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    TextSpan(
-                                                      text:
-                                                          '${trans.time}  ${trans.bank}',
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            //const Spacer(),
-                                            Text(
-                                              '${trans.income}원',
-                                              style: const TextStyle(
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      },
-                    )),
-                  ],
-                ),
-
-                /// 두번째 탭
-                Column(
-                  children: [
-                    const TotalMoney(),
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: TableCalendar(
-                          daysOfWeekHeight: 20,
-                          daysOfWeekStyle: const DaysOfWeekStyle(),
-                          locale: 'ko_KR',
-                          headerVisible: false,
-                          focusedDay: MainSelectDateTime,
-                          firstDay: DateTime.utc(1900, 1, 1),
-                          lastDay: DateTime.utc(2100, 1, 1),
-                          headerStyle: HeaderStyle(
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          calendarStyle: const CalendarStyle(
-                            weekendTextStyle: TextStyle(
-                              color: Colors.red,
-                              fontSize: 12,
-                            ),
-                            cellMargin: EdgeInsets.all(8),
-                            defaultTextStyle: TextStyle(
-                              fontSize: 12,
-                            ),
-                            todayTextStyle: TextStyle(
-                              fontSize: 12,
-                            ),
-                            tableBorder: TableBorder(
-                              horizontalInside: BorderSide(
-                                color: Colors.grey,
-                              ),
-                              verticalInside: BorderSide(
-                                color: Colors.grey,
-                              ),
-                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
 
-                /// 세번째 탭
-                Column(
-                  children: [
-                    const TotalMoney(),
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: ListView(
-                          children: [
-                            ExpansionTile(
-                              showTrailingIcon: false,
-                              title: Column(
+                      /// ->
+                      IconButton(
+                        iconSize: 18,
+                        // 년월 값 (+)
+                        onPressed: () => _updateYearMonth(1),
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.email_outlined),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.star_border),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.search),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.list),
+              ),
+            ],
+
+            /// TabBar
+            bottom: TabBar(
+                // 컨트롤러 설정
+                controller: _tabController,
+                // 스크롤 가능 여부
+                isScrollable: false,
+                // 탭 아래 표시되는 선 색상 설정
+                indicatorColor: Colors.red,
+                // 탭 아래 표시되는 선 두께 설정
+                indicatorWeight: 4,
+                // 탭 텍스트 색상
+                labelColor: Colors.black,
+                // 탭 아래 표시되는 선 크기 설정
+                indicatorSize: TabBarIndicatorSize.tab,
+                // 선택된 탭 스타일
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                // 선택되지 않은 탭 스타일
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                ),
+                // 탭 바에 표시될 탭 콘텐츠 정의
+                tabs: const [
+                  Tab(
+                    text: "일일",
+                  ),
+                  Tab(
+                    text: "달력",
+                  ),
+                  Tab(
+                    text: "월별",
+                  ),
+                  Tab(
+                    text: "결산",
+                  ),
+                  Tab(
+                    text: "메모",
+                  ),
+                ]),
+          ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              /// 첫번째 탭
+              Column(
+                children: [
+                  // 수입, 지출, 합계
+                  const TotalMoney(),
+                  Expanded(
+                      // List에 데이터 없으면 데이터 없음 텍스트 표출 / 있으면 데이터 표출
+                      child: FutureBuilder(
+                    future: apimodel,
+                    builder: (context, snapshot) {
+                      // 데이터 로딩중
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.data!.isEmpty) {
+                        return const Center(child: Text('데이터 없음'));
+                      } else {
+                        final apimodel = snapshot.data!;
+                        return ListView.builder(
+                          // 보여주려는 데이터 개수
+                          itemCount: apimodel.length,
+                          // itemCount 만큼 반복되며 화면에 보여주려는 위젯
+                          // index가 0부터 transactions.length - 1까지 증가하며 전달됩니다.
+                          itemBuilder: (context, index) {
+                            // transactions index에 해당하는 data 꺼내기
+                            final trans = apimodel[index];
+                            return Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade300),
+                                //borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
                                 children: [
                                   Row(
                                     children: [
-                                      const Text('12월'),
-                                      SizedBox(
-                                        width: 180,
-                                      ),
                                       Text(
-                                        '0원',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0원',
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '12.1 ~ 12.31',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0원',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              children: [
-                                Container(
-                                  color: Colors.grey,
-                                  child: const ListTile(
-                                    title: Text('12 ~ 12'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-
-                /// 네번째 탭
-                Column(
-                  children: [
-                    const TotalMoney(),
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 13,
-                                    vertical: 30,
-                                  ),
-                                ),
-                                const Icon(Icons.add_card_outlined),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text(
-                                  '예산',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                TextButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStateProperty.all(
-                                      Colors.grey.shade200,
-                                    ),
-                                    shape: WidgetStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  child: const Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        '예산설정',
-                                        style: TextStyle(
-                                          color: Colors.grey,
+                                        trans.date,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Icon(
-                                        Icons.keyboard_arrow_right_outlined,
-                                        size: 15,
-                                        color: Colors.grey,
+                                      const SizedBox(
+                                        width: 5,
                                       ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange,
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                        ),
+                                        child: Text(
+                                          trans.dayOfWeek,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        '${MainSelectDateTime.year}. ${MainSelectDateTime.month}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 150,
+                                      ),
+                                      Text(
+                                        '${trans.income}원',
+                                        style: const TextStyle(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        '${trans.expense}원',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      )
                                     ],
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    color: Colors.grey.shade200,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 30,
-                                  ),
-                                ),
-                                const Icon(Icons.attach_money_outlined),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text(
-                                  '자산',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  '${MainSelectDateTime.year.toString().substring(2)}.${MainSelectDateTime.month}.${MainSelectFirstDay.day} ~ ${MainSelectDateTime.year.toString().substring(2)}.${MainSelectDateTime.month}.${MainSelelctLastDay.day}',
-                                ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                              ],
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              height: 150,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 23),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 15),
-                              child: const Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '전월대비 지출 (당월/전월)',
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0%',
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
+                                  const SizedBox(
+                                    height: 5,
                                   ),
                                   Row(
                                     children: [
-                                      Text(
-                                        '지출 (현금,은행)',
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0원',
-                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 1,
+                                          color: Colors.grey.shade300,
+                                        ),
+                                      )
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: 10,
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 5),
                                   ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '지출 (카드)',
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0원',
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '이체 (현금,은행->)',
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        '0원',
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              children: [
-                                // Padding 대신 SizedBox로 여백을 추가
-                                const SizedBox(width: 22),
-                                Expanded(
-                                  // 버튼이 Row의 여유 공간에 맞춰 크기를 자동으로 조정
-                                  child: SizedBox(
-                                    height: 40,
-                                    child: TextButton(
-                                      style: ButtonStyle(
-                                        shape: WidgetStateProperty.all(
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            side: const BorderSide(
-                                              color: Colors.grey, // 버튼 테두리 색상
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DetailPage(
+                                            id: trans.id,
+                                            date: trans.date,
+                                            dayOfWeek: trans.dayOfWeek,
+                                            category: trans.category,
+                                            description: trans.description,
+                                            time: trans.time,
+                                            bank: trans.bank,
+                                            income: trans.income,
+                                            expense: trans.expense,
+                                            fulldate: trans.fulldate,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            CupertinoIcons.car,
+                                          ),
+                                          Text(
+                                            trans.category,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Expanded(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text:
+                                                        '${trans.description}\n',
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        '${trans.time}  ${trans.bank}',
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        backgroundColor:
-                                            WidgetStateProperty.all(
-                                                Colors.white), // 배경색 설정
-                                        padding: WidgetStateProperty.all(
-                                          const EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 16),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        print('Click');
-                                      },
-                                      child: const Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .center, // 텍스트와 아이콘 가운데 정렬
-                                        children: [
-                                          FaIcon(
-                                            FontAwesomeIcons.fileExcel,
-                                            color: Colors.lightGreen,
-                                          ),
-                                          SizedBox(width: 8), // 아이콘과 텍스트 사이 간격
+                                          //const Spacer(),
                                           Text(
-                                            '메일로 엑셀파일 내보내기',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
+                                            '${trans.income}원',
+                                            style: const TextStyle(
+                                              color: Colors.red,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 22), // 오른쪽 여백
-                              ],
-                            )
-                          ],
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  )),
+                ],
+              ),
+
+              /// 두번째 탭
+              Column(
+                children: [
+                  const TotalMoney(),
+                  Expanded(
+                    child: Container(
+                      color: Colors.white,
+                      child: TableCalendar(
+                        daysOfWeekHeight: 20,
+                        daysOfWeekStyle: const DaysOfWeekStyle(),
+                        locale: 'ko_KR',
+                        headerVisible: false,
+                        focusedDay: MainSelectDateTime,
+                        firstDay: DateTime.utc(1900, 1, 1),
+                        lastDay: DateTime.utc(2100, 1, 1),
+                        headerStyle: HeaderStyle(
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        calendarStyle: const CalendarStyle(
+                          weekendTextStyle: TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                          ),
+                          cellMargin: EdgeInsets.all(8),
+                          defaultTextStyle: TextStyle(
+                            fontSize: 12,
+                          ),
+                          todayTextStyle: TextStyle(
+                            fontSize: 12,
+                          ),
+                          tableBorder: TableBorder(
+                            horizontalInside: BorderSide(
+                              color: Colors.grey,
+                            ),
+                            verticalInside: BorderSide(
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  )
+                ],
+              ),
 
-                /// 다섯번째 탭
-                const Center(
-                  child: Text("데이터가 없습니다."),
-                ),
-              ],
-            ),
-            floatingActionButton: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {},
-                  shape: CircleBorder(
-                    side: BorderSide(
-                      color: Colors.red.shade400,
+              /// 세번째 탭
+              Column(
+                children: [
+                  const TotalMoney(),
+                  Expanded(
+                    child: Container(
+                      color: Colors.white,
+                      child: ListView(
+                        children: [
+                          ExpansionTile(
+                            showTrailingIcon: false,
+                            title: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text('12월'),
+                                    SizedBox(
+                                      width: 180,
+                                    ),
+                                    Text(
+                                      '0원',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0원',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '12.1 ~ 12.31',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0원',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            children: [
+                              Container(
+                                color: Colors.grey,
+                                child: const ListTile(
+                                  title: Text('12 ~ 12'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+              /// 네번째 탭
+              Column(
+                children: [
+                  const TotalMoney(),
+                  Expanded(
+                    child: Container(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 13,
+                                  vertical: 30,
+                                ),
+                              ),
+                              const Icon(Icons.add_card_outlined),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              const Text(
+                                '예산',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Spacer(),
+                              TextButton(
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(
+                                    Colors.grey.shade200,
+                                  ),
+                                  shape: WidgetStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: const Row(
+                                  children: <Widget>[
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '예산설정',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.keyboard_arrow_right_outlined,
+                                      size: 15,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  color: Colors.grey.shade200,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 30,
+                                ),
+                              ),
+                              const Icon(Icons.attach_money_outlined),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              const Text(
+                                '자산',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                '${MainSelectDateTime.year.toString().substring(2)}.${MainSelectDateTime.month}.${MainSelectFirstDay.day} ~ ${MainSelectDateTime.year.toString().substring(2)}.${MainSelectDateTime.month}.${MainSelelctLastDay.day}',
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                            ],
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            height: 150,
+                            margin: const EdgeInsets.symmetric(horizontal: 23),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 15),
+                            child: const Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '전월대비 지출 (당월/전월)',
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0%',
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '지출 (현금,은행)',
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0원',
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '지출 (카드)',
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0원',
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '이체 (현금,은행->)',
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      '0원',
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            children: [
+                              // Padding 대신 SizedBox로 여백을 추가
+                              const SizedBox(width: 22),
+                              Expanded(
+                                // 버튼이 Row의 여유 공간에 맞춰 크기를 자동으로 조정
+                                child: SizedBox(
+                                  height: 40,
+                                  child: TextButton(
+                                    style: ButtonStyle(
+                                      shape: WidgetStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          side: const BorderSide(
+                                            color: Colors.grey, // 버튼 테두리 색상
+                                          ),
+                                        ),
+                                      ),
+                                      backgroundColor: WidgetStateProperty.all(
+                                          Colors.white), // 배경색 설정
+                                      padding: WidgetStateProperty.all(
+                                        const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 16),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      print('Click');
+                                    },
+                                    child: const Row(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center, // 텍스트와 아이콘 가운데 정렬
+                                      children: [
+                                        FaIcon(
+                                          FontAwesomeIcons.fileExcel,
+                                          color: Colors.lightGreen,
+                                        ),
+                                        SizedBox(width: 8), // 아이콘과 텍스트 사이 간격
+                                        Text(
+                                          '메일로 엑셀파일 내보내기',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 22), // 오른쪽 여백
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  child: Icon(
-                    Icons.assignment_add,
+                ],
+              ),
+
+              /// 다섯번째 탭
+              const Center(
+                child: Text("데이터가 없습니다."),
+              ),
+            ],
+          ),
+          floatingActionButton: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                backgroundColor: Colors.white,
+                onPressed: () {},
+                shape: CircleBorder(
+                  side: BorderSide(
                     color: Colors.red.shade400,
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
+                child: Icon(
+                  Icons.assignment_add,
+                  color: Colors.red.shade400,
                 ),
-                FloatingActionButton(
-                  heroTag: 'chat',
-                  backgroundColor: Colors.red.shade400,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AccountbookAdd(),
-                      ),
-                    );
-                  },
-                  shape: const CircleBorder(),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              FloatingActionButton(
+                heroTag: 'chat',
+                backgroundColor: Colors.red.shade400,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountbookAdd(),
+                    ),
+                  );
+                },
+                shape: const CircleBorder(),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
