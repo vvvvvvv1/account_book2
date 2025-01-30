@@ -9,7 +9,7 @@ class ApiService {
   //static String baseUrl = "https://webtoon-crawler.nomadcoders.workers.dev";
   //static final String today = "today";
 
-  static String baseUrl = "http://192.168.10.14:3000";
+  static String baseUrl = "http://192.168.219.145:3000";
   //static String baseUrl = "http://10.0.2.2:3000";
   static String user = "user";
   static String select = "select";
