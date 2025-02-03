@@ -31,9 +31,39 @@ class _LoginState extends State<Login> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '로그인 페이지',
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 60,
+                    ),
+                    Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 35,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Welcome Back',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+              )
             ],
           ),
         ),
