@@ -17,6 +17,7 @@ class ApiService {
   static String create = "create";
   static String update = "update";
   static String delete = "delete";
+  static String login = "login";
 
   /* SELECT */
   // 메서드 생성
@@ -134,6 +135,39 @@ class ApiService {
     // 서버로부터 받은 응답 상태 코드 확인
     if (response.statusCode != 200) {
       throw Exception('Failed to delete data');
+    }
+  }
+
+  /* 로그인 조회 */
+  // 클래스 인스턴스를 생성하지 않고 사용
+  // 비동기 작업을 다룰 때 사용되는 타입 (예: HTTP 요청, 파일 입출력 등)
+  static Future<bool> userCheck({
+    required String username,
+    required String password,
+  }) async {
+    try {
+      // http.put : 기존 리소스 수정
+      final response = await http.post(
+        // 요청할 서버 URL 구성
+        Uri.parse('$baseUrl/$user/$login'),
+        // 요청 헤더 : 서버에 보낼 데이터의 타입 JSON 형식임을 알 수 있게 설정
+        headers: {'Content-Type': 'application/json'},
+        // 요청 본문 : 서버에 전송할 데이터 JSON 형식으로 변환
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
+      );
+      // 서버로부터 받은 응답 상태 코드 확인
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['success'] ?? false;
+        //throw Exception('Failed to create data');
+      } else
+        return false;
+    } catch (e) {
+      print('로그인 오류: $e');
+      return false;
     }
   }
 }
