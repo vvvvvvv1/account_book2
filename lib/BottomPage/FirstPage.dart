@@ -7,6 +7,8 @@ import 'package:account_book2/TabBar/FourthTab.dart';
 import 'package:account_book2/TabBar/SecondTab.dart';
 import 'package:account_book2/TabBar/ThirdTab.dart';
 import 'package:account_book2/accountbook_add.dart';
+import 'package:account_book2/main.dart';
+import 'package:account_book2/mainpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -213,6 +215,36 @@ class FirstPageState extends State<FirstPage>
               IconButton(
                 onPressed: () {},
                 icon: const Icon(Icons.list),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('로그아웃'),
+                        content: Text('로그아웃 하시겠습니까?'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MyApp(),
+                                ),
+                              );
+                            },
+                            child: Text('확인'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.exit_to_app),
               ),
             ],
 

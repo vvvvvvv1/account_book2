@@ -1,4 +1,6 @@
 import 'package:account_book2/Api/api_service.dart';
+import 'package:account_book2/main.dart';
+import 'package:account_book2/mainpage.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
@@ -42,11 +44,19 @@ class _LoginState extends State<Login> {
                     SizedBox(
                       height: 60,
                     ),
-                    Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 35,
-                        color: Colors.white,
+                    GestureDetector(
+                      onDoubleTap: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Mainpage(),
+                        ),
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 35,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -142,13 +152,62 @@ class _LoginState extends State<Login> {
                                 borderRadius: BorderRadius.circular(50),
                               ),
                               onPressed: () async {
-                                final a = await ApiService.userCheck(
+                                var a = await ApiService.userCheck(
                                   username: usernameController.text,
                                   password: passwordController.text,
                                 );
-                                if (a) {
-                                  print("✅ 로그인 성공!");
+                                if (a['success']) {
+                                  Future.delayed(Duration(milliseconds: 100),
+                                      () {
+                                    // 애니메이션 대기 시간 추가
+                                    Navigator.pushReplacement(
+                                      context,
+                                      PageRouteBuilder(
+                                        transitionDuration: Duration(
+                                            milliseconds: 500), // 애니메이션 시간 설정
+                                        pageBuilder: (context, animation,
+                                                secondaryAnimation) =>
+                                            Mainpage(),
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          const begin =
+                                              Offset(1.0, 0.0); // 오른쪽에서 왼쪽으로 이동
+                                          const end = Offset.zero;
+                                          const curve = Curves.easeInOut;
+
+                                          var tween = Tween(
+                                                  begin: begin, end: end)
+                                              .chain(CurveTween(curve: curve));
+                                          var offsetAnimation =
+                                              animation.drive(tween);
+
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  });
+                                  print("✅ 로그인 성공! ${a['user']}");
                                 } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('로그인 실패'),
+                                        content: Text('로그인에 실패했습니다.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('확인'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                   print("❌ 로그인 실패!");
                                 }
 

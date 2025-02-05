@@ -141,7 +141,7 @@ class ApiService {
   /* 로그인 조회 */
   // 클래스 인스턴스를 생성하지 않고 사용
   // 비동기 작업을 다룰 때 사용되는 타입 (예: HTTP 요청, 파일 입출력 등)
-  static Future<bool> userCheck({
+  static Future<Map<String, dynamic>> userCheck({
     required String username,
     required String password,
   }) async {
@@ -161,13 +161,16 @@ class ApiService {
       // 서버로부터 받은 응답 상태 코드 확인
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['success'] ?? false;
+        return {
+          'success': data['success'] ?? false,
+          'user': data['user'] ?? {}, // 사용자가 없으면 빈 객체 반환
+        };
         //throw Exception('Failed to create data');
       } else
-        return false;
+        return {'success': false, 'user': {}};
     } catch (e) {
       print('로그인 오류: $e');
-      return false;
+      return {'success': false, 'user': {}};
     }
   }
 }
