@@ -3,6 +3,7 @@ import 'package:account_book2/main.dart';
 import 'package:account_book2/mainpage.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -14,8 +15,12 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   // 아이디 입력 칸
   TextEditingController usernameController = TextEditingController();
+
   // 패스워드 입력 칸
   TextEditingController passwordController = TextEditingController();
+
+  // 스토리지 인스턴스
+  final storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -157,6 +162,13 @@ class _LoginState extends State<Login> {
                                   password: passwordController.text,
                                 );
                                 if (a['success']) {
+                                  // 서버에서 받은 사용자 이름
+                                  String username = a['user'];
+
+                                  // 로그인 정보 저장
+                                  await storage.write(
+                                      key: "username", value: username);
+
                                   Future.delayed(Duration(milliseconds: 100),
                                       () {
                                     // 애니메이션 대기 시간 추가

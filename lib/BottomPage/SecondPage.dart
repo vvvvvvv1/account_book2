@@ -1,5 +1,7 @@
 import 'package:account_book2/Api/api_service.dart';
 import 'package:account_book2/Model/api_model.dart';
+import 'package:account_book2/resources/app_colors.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +17,8 @@ DateTime MainSelectDateTime = DateTime.now();
 List<String> DropDownList = ['주간', '월간', '연간', '기간'];
 
 String dropDownValue = "주간";
+
+int touchedIndex = 1;
 
 final Future<List<ApiModel>> apimodel = ApiService.getApiData();
 
@@ -126,52 +130,118 @@ class _SecondPageState extends State<SecondPage> {
                   Tab(text: '지출'),
                 ]),
           ),
-          body: FutureBuilder(
-            future: apimodel,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return TabBarView(
-                  children: [
-                    Column(
-                      children: [
-                        Expanded(
-                          child: ListView.separated(
-                              itemBuilder: (context, index) {
-                                var a = snapshot.data![index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                  ),
-                                  child: Text(a.category),
-                                );
-                              },
-                              separatorBuilder: (context, index) => SizedBox(
-                                    width: 20,
-                                  ),
-                              itemCount: snapshot.data!.length),
-                        )
-                      ],
+          body: Column(
+            children: [
+              AspectRatio(
+                // 가로가 세로보다 1.3배 김
+                aspectRatio: 1.3,
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 18,
                     ),
-                    Column(
-                      children: [
-                        // 드래그 되는 text 위젯
-                        SelectableText.rich(TextSpan(
-                          children: [
-                            TextSpan(text: '테스트'),
-                          ],
-                        )),
-                      ],
+                    Expanded(
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: PieChart(
+                          PieChartData(
+                            pieTouchData: PieTouchData(
+                              touchCallback:
+                                  (FlTouchEvent event, PieTouchResponse) {
+                                setState(() {
+                                  if (!event.isInterestedForInteractions ||
+                                      PieTouchResponse == null ||
+                                      PieTouchResponse.touchedSection == null) {
+                                    touchedIndex = -1;
+                                    return;
+                                  }
+                                  touchedIndex = PieTouchResponse
+                                      .touchedSection!.touchedSectionIndex;
+                                });
+                              },
+                            ),
+                            borderData: FlBorderData(
+                              show: false,
+                            ),
+                            sectionsSpace: 0,
+                            centerSpaceRadius: 40,
+                            sections: showingSections(),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
-                );
-              } else
-                return Center(
-                  child: Text('err: ${snapshot.error}'),
-                );
-            },
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+List<PieChartSectionData> showingSections() {
+  return List.generate(4, (i) {
+    final isTouched = i == touchedIndex;
+    final fontSize = isTouched ? 25.0 : 16.0;
+    final radius = isTouched ? 60.0 : 50.0;
+    const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+    switch (i) {
+      case 0:
+        return PieChartSectionData(
+          color: AppColors.contentColorBlue,
+          value: 40,
+          title: '40%',
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: AppColors.mainTextColor1,
+            shadows: shadows,
+          ),
+        );
+      case 1:
+        return PieChartSectionData(
+          color: AppColors.contentColorYellow,
+          value: 30,
+          title: '30%',
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: AppColors.mainTextColor1,
+            shadows: shadows,
+          ),
+        );
+      case 2:
+        return PieChartSectionData(
+          color: AppColors.contentColorPurple,
+          value: 15,
+          title: '15%',
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: AppColors.mainTextColor1,
+            shadows: shadows,
+          ),
+        );
+      case 3:
+        return PieChartSectionData(
+          color: AppColors.contentColorGreen,
+          value: 15,
+          title: '15%',
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: AppColors.mainTextColor1,
+            shadows: shadows,
+          ),
+        );
+      default:
+        throw Error();
+    }
+  });
 }

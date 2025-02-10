@@ -1,8 +1,13 @@
 import 'package:account_book2/Login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
+  // Flutter 엔진 초기화
+  WidgetsFlutterBinding.ensureInitialized();
+  // 날짜 포맷 초기화
+  await initializeDateFormatting();
   runApp(
     const MyApp(),
   );

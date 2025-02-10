@@ -11,6 +11,7 @@ import 'package:account_book2/main.dart';
 import 'package:account_book2/mainpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});
@@ -111,6 +112,8 @@ class FirstPageState extends State<FirstPage>
   @override
   Widget build(BuildContext context) {
     final Future<List<ApiModel>> apimodel = ApiService.getApiData();
+
+    final storage = FlutterSecureStorage();
     return MaterialApp(
       // 디버그 배너 없애기
       debugShowCheckedModeBanner: false,
@@ -220,16 +223,22 @@ class FirstPageState extends State<FirstPage>
                 width: 10,
               ),
               IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  // 저장된 사용자 이름 불러오기
+                  String? username = await storage.read(key: "username");
+
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
                         title: Text('로그아웃'),
-                        content: Text('로그아웃 하시겠습니까?'),
+                        content: Text('${username}님 로그아웃 하시겠습니까?'),
                         actions: <Widget>[
                           TextButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              // 저장된 로그인 정보 삭제
+                              await storage.delete(key: "username");
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -238,6 +247,12 @@ class FirstPageState extends State<FirstPage>
                               );
                             },
                             child: Text('확인'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('취소'),
                           ),
                         ],
                       );
