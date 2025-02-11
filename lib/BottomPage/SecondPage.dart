@@ -1,6 +1,7 @@
 import 'package:account_book2/Api/api_service.dart';
 import 'package:account_book2/Model/api_model.dart';
 import 'package:account_book2/resources/app_colors.dart';
+import 'package:account_book2/resources/indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -170,6 +171,47 @@ class _SecondPageState extends State<SecondPage> {
                         ),
                       ),
                     ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Indicator(
+                          color: AppColors.contentColorBlue,
+                          text: 'First',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Indicator(
+                          color: AppColors.contentColorYellow,
+                          text: 'Second',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Indicator(
+                          color: AppColors.contentColorPurple,
+                          text: 'Third',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Indicator(
+                          color: AppColors.contentColorGreen,
+                          text: 'Fourth',
+                          isSquare: true,
+                        ),
+                        SizedBox(
+                          height: 18,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: 28,
+                    )
                   ],
                 ),
               ),
