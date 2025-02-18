@@ -33,29 +33,42 @@ class _Login2State extends State<Login2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      // 여러 요소 겹쳐서 배치
       body: Stack(
         children: [
+          // Stack 내에서 특정 위치에 배치
           Positioned(
+            // 화면 너비의 1.7배 크기로 배경 이미지 설정
             width: MediaQuery.of(context).size.width * 1.7,
+            // 왼, 위, 아래 위치 설정
             left: 100,
+            top: 40,
             bottom: 100,
+            // 이미지 불러와 배경 설정
             child: Image.asset(
               "assets/Backgrounds/Spline.png",
             ),
           ),
+          // 화면 전체에 배치
           Positioned.fill(
+            // 배경을 필터링하는데 사용되는 위젯
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: const SizedBox(),
+              // 블러 효과 적용(x : 가로 / y : 세로)
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 10),
             ),
           ),
-          const RiveAnimation.asset(
+          // Rive 애니메이션 불러오기
+          RiveAnimation.asset(
             "assets/RiveAssets/shapes.riv",
           ),
+          // 화면 전체에 배치
           Positioned.fill(
+            // 배경을 필터링하는데 사용되는 위젯
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: const SizedBox(),
+              // 블러 효과 적용(x : 가로 / y : 세로)
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 10),
+              child: SizedBox(),
             ),
           ),
           AnimatedPositioned(
