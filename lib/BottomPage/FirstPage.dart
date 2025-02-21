@@ -32,6 +32,8 @@ class FirstPageState extends State<FirstPage>
       DateTime(DateTime.now().year, DateTime.now().month, 1);
 
   /// 해당 년월 마지막날 표출
+  /// ex) 현재 2월 -> Month + 1 (3월) -> day 값을 0으로 설정 시 지정된 달의 "이전 달"의 마지막 날 의미
+  /// 즉 2월의 마지막 날을 구함
   static DateTime MainSelelctLastDay =
       DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
 
@@ -92,7 +94,7 @@ class FirstPageState extends State<FirstPage>
     }
   }
 
-  /// showDatePicker를 사용하여 년월 선택 및 선택 날짜 변수에 저장 (년도 선택)
+  /// showDatePicker를 사용하여 년 선택 및 선택 날짜 변수에 저장 (년도 선택)
   Future<void> _selectYear(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -112,9 +114,12 @@ class FirstPageState extends State<FirstPage>
 
   @override
   Widget build(BuildContext context) {
+    // api에서 데이터 가져옴 (비동기)
     final Future<List<ApiModel>> apimodel = ApiService.getApiData();
 
+    // FlutterSecureStorage 객체 생성 (보안 저장소 관리)
     final storage = FlutterSecureStorage();
+
     return MaterialApp(
       // 디버그 배너 없애기
       debugShowCheckedModeBanner: false,
@@ -172,7 +177,7 @@ class FirstPageState extends State<FirstPage>
                         icon: const Icon(Icons.arrow_back),
                       ),
                       Expanded(
-                        /// ex) 2025년
+                        /// ex) 2025년 1월
                         /// 사용자 동작 감지 위젯
                         child: GestureDetector(
                           onTap: () => _selectYearMonth(
@@ -194,6 +199,7 @@ class FirstPageState extends State<FirstPage>
                       ),
                     ],
                   ),
+            // AppBar 오른쪽 영역
             actions: [
               IconButton(
                 onPressed: () {},
@@ -234,18 +240,24 @@ class FirstPageState extends State<FirstPage>
                   // 저장된 사용자 이름 불러오기
                   String? username = await storage.read(key: "username");
 
+                  // 팝업 창(다이얼로그) 화면 표시
                   showDialog(
                     context: context,
                     builder: (context) {
+                      // 다이얼로그 생성
                       return AlertDialog(
+                        // 제목
                         title: Text('로그아웃'),
+                        // 메시지 표시
                         content: Text('${username}님 로그아웃 하시겠습니까?'),
                         actions: <Widget>[
+                          // 확인 버튼
                           TextButton(
                             onPressed: () async {
                               // 저장된 로그인 정보 삭제
                               await storage.delete(key: "username");
 
+                              // 화면 이동하면서 현재 화면 제거 (뒤로 가기 방지)
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -255,8 +267,10 @@ class FirstPageState extends State<FirstPage>
                             },
                             child: Text('확인'),
                           ),
+                          // 취소 버튼
                           TextButton(
                             onPressed: () {
+                              // 다이얼로그 닫음
                               Navigator.of(context).pop();
                             },
                             child: Text('취소'),
@@ -330,20 +344,25 @@ class FirstPageState extends State<FirstPage>
               Fifthtab(),
             ],
           ),
+          // 우측 하단 버튼
           floatingActionButton: Row(
+            // 최소한 크기 설정
             mainAxisSize: MainAxisSize.min,
             children: [
               FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {
-                  Navigator.push(
+                  // 화면 이동하면서 현재 화면 제거 (뒤로 가기 방지)
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Login(),
                     ),
                   );
                 },
+                // 원형 유지
                 shape: CircleBorder(
+                  // 테두리 빨간색 추가
                   side: BorderSide(
                     color: Colors.red.shade400,
                   ),
@@ -357,16 +376,19 @@ class FirstPageState extends State<FirstPage>
                 width: 10,
               ),
               FloatingActionButton(
+                // 같은 화면에 여러 개의 FloatingActionButton이 있을 경우 각 버튼을 구별
                 heroTag: 'chat',
                 backgroundColor: Colors.red.shade400,
                 onPressed: () {
-                  Navigator.push(
+                  // 화면 이동하면서 현재 화면 제거 (뒤로 가기 방지)
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AccountbookAdd(),
                     ),
                   );
                 },
+                // 원형 유지
                 shape: const CircleBorder(),
                 child: const Icon(
                   Icons.add,
