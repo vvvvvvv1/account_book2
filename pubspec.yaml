@@ -73,11 +73,13 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - assets/Backgrounds/Spline.png
-     - assets/Fonts/Poppins-Bold.ttf
      - assets/RiveAssets/check.riv
      - assets/RiveAssets/shapes.riv
      - assets/RiveAssets/button.riv
      - assets/RiveAssets/confetti.riv
+     - assets/RiveAssets/icons.riv
+     - assets/RiveAssets/house.riv
+     - assets/RiveAssets/menu_button.riv
      - assets/icons/apple_box.svg
      - assets/icons/email_box.svg
      - assets/icons/google_box.svg

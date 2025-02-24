@@ -1,4 +1,5 @@
 import 'package:account_book2/mainpage.dart';
+import 'package:account_book2/practice/entry_point.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,7 +68,7 @@ class _SignInFormState extends State<SignInForm> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Mainpage(),
+                    builder: (context) => const EntryPoint(),
                   ),
                 );
               });

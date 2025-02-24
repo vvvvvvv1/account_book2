@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Indicator extends StatelessWidget {
+  // 생성자
   const Indicator({
     super.key,
     required this.color,
@@ -23,6 +24,7 @@ class Indicator extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
+            // true : 사각형 / false : 원형
             shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
             color: color,
           ),
