@@ -1,7 +1,7 @@
 import 'package:account_book2/Login.dart';
 import 'package:account_book2/practice/Login2.dart';
-import 'package:account_book2/practice/entry_point.dart';
-import 'package:account_book2/practice/side_menu.dart';
+import 'package:account_book2/practice/X/entry_point.dart';
+import 'package:account_book2/practice/X/side_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -31,8 +31,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       // 디버그 배너 없애기
       debugShowCheckedModeBanner: false,
-      //home: Login2(),
-      home: SideMenu(),
+      home: Login2(),
     );
   }
 }

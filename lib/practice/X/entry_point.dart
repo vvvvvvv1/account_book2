@@ -1,7 +1,7 @@
 import 'package:account_book2/practice/animated_bar.dart';
-import 'package:account_book2/practice/home_screen.dart';
-import 'package:account_book2/practice/rive_asset.dart';
-import 'package:account_book2/practice/rive_utils.dart';
+import 'package:account_book2/practice/X/home_screen.dart';
+import 'package:account_book2/practice/X/rive_asset.dart';
+import 'package:account_book2/practice/X/rive_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
